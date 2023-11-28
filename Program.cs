@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 
 //This project was made by Jay Villanueva and Amanda White for their CEIS 400 group project.
-// Date: 11/21/2023
+// Date: 11/2//2023
+// Version 2.0
 public class Employee
 {
     private int employeeId;
@@ -201,31 +202,305 @@ public class Management
     }
 }
 
+
+
+
 // Program class
 
 class Program
 {
     static void Main()
     {
-        // Test your classes here
-        Management manager = new Management(1, "John Manager");
-        manager.AuditAssets();
-        manager.RemoveAsset();
-        manager.AddAsset();
-        manager.SetName("Jane Manager");
 
-        Employee employee = new Employee(1, "John Doe");
-        employee.SetName("Jane Smith");
+        do
+        {
+            // Create new manager
+            Management manager = new Management(1, "John Manager");
 
-        CheckIn checkIn = new CheckIn(1, "Laptop, Mouse, Keyboard");
-        string returnedAssetList = checkIn.ReturnAsset();
+            List<Employee> employees = new List<Employee>
+            {
+                new Employee(1, "John Doe"),
+                new Employee(2, "Jane Smith"),
+                new Employee(3, "Bob Johnson"),
+                new Employee(4, "Jane Manager")
+                // Add more employees as needed
+            };
 
-        CheckOut checkOut = new CheckOut(1, "Laptop, Mouse, Keyboard");
-        string borrowedAssetList = checkOut.BorrowAsset();
+            // List of available assets
+            List<Asset> availableAssets = new List<Asset>
+            {
+                new Asset(1, 10, "Laptop", "In Use"),
+                new Asset(2, 5, "Keyboard", "Available"),
+                new Asset(3, 3, "Mouse", "In Use")
+                // Add more assets as needed
+            };
 
-        Asset asset = new Asset(1, 10, "Room 101", "In Use");
-        string obtainedLocation = asset.ObtainLocation();
-        int obtainedStock = asset.ObtainStock();
-        asset.SetAssignment("Not In Use");
+            // Display Employees
+            Console.WriteLine("Available Employees:");
+            foreach (var employee in employees)
+            {
+                Console.WriteLine($"Employee ID: {employee.EmployeeId}, Name: {employee.Name}");
+            }
+
+            // User input for employee selection
+            Console.Write("Choose Employee ID from the list: ");
+            int chosenEmployeeId = int.Parse(Console.ReadLine());
+
+            // Find the selected employee
+            Employee selectedEmployee = GetSelectedEmployee(employees);
+
+            if (selectedEmployee != null)
+            {
+                Console.WriteLine($"Selected Employee: {selectedEmployee.Name}");
+
+                if (selectedEmployee.Name.Equals(manager.Name, StringComparison.OrdinalIgnoreCase))
+                {
+                    // Manager Options
+                    DisplayManagerOptions();
+                    int selectedOption = GetSelectedOption();
+                    PerformManagerAction(selectedOption, manager, availableAssets);
+                }
+                else
+                {
+                    // Regular Employee Options
+                    DisplayRegularEmployeeOptions();
+                    int selectedOption = GetSelectedOption();
+                    PerformRegularEmployeeAction(selectedOption, selectedEmployee, availableAssets);
+                }
+            }
+            else
+            {
+                Console.WriteLine("Invalid Employee ID. Please choose a valid employee.");
+            }
+
+            Console.Write("Do you want to perform another action? (y/n): ");
+            char repeatChoice = Console.ReadKey().KeyChar;
+
+            if (repeatChoice != 'y' && repeatChoice != 'Y')
+            {
+                break; // Exit the loop if the user doesn't want to repeat
+            }
+
+            Console.Clear();
+        } while (true);
+    } 
+
+
+        static void DisplayManagerOptions()
+        {
+            Console.WriteLine("Manager Options:");
+            Console.WriteLine("1. Audit Assets");
+            Console.WriteLine("2. Remove Asset");
+            Console.WriteLine("3. Add Asset");
+        }
+
+        static void PerformManagerAction(int selectedOption, Management manager, List<Asset> availableAssets)
+        {
+            switch (selectedOption)
+            {
+                case 1:
+                    // Audit Assets
+                    Console.WriteLine("Auditing Assets...");
+
+                    // Display all assets and their assignments
+                    Console.WriteLine("All Assets and Assignments:");
+                    foreach (var asset in availableAssets)
+                    {
+                        Console.WriteLine($"Asset ID: {asset.AssetId}, Name: {asset.AssetLocation}, Assignment: {asset.Assignment}");
+                    }
+                    break;
+
+                case 2:
+                    // Remove Asset
+                    Console.WriteLine("Removing Asset...");
+
+                    // Display available assets
+                    Console.WriteLine("Available Assets:");
+                    foreach (var asset in availableAssets)
+                    {
+                        Console.WriteLine($"Asset ID: {asset.AssetId}, Name: {asset.AssetLocation}, Assignment: {asset.Assignment}");
+                    }
+
+                    // User input for removing an asset
+                    Console.Write("Enter Asset ID to remove: ");
+                    int assetToRemoveId = int.Parse(Console.ReadLine());
+
+                    // Find the asset to remove
+                    Asset assetToRemove = availableAssets.Find(asset => asset.AssetId == assetToRemoveId);
+
+                    if (assetToRemove != null)
+                    {
+                        // Remove the asset from the list
+                        availableAssets.Remove(assetToRemove);
+
+                        // Display a message confirming the removal of the asset
+                        Console.WriteLine($"Asset '{assetToRemove.AssetLocation}' removed successfully.");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Invalid Asset ID. Please choose a valid asset to remove.");
+                    }
+                    break;
+
+                case 3:
+                    // Add Asset
+                    Console.WriteLine("Adding Asset...");
+
+                    // User input for new asset details
+                    Console.Write("Enter Asset ID: ");
+                    int newAssetId = int.Parse(Console.ReadLine());
+
+                    Console.Write("Enter Asset Stock: ");
+                    int newAssetStock = int.Parse(Console.ReadLine());
+
+                    Console.Write("Enter Asset Location: ");
+                    string newAssetLocation = Console.ReadLine();
+
+                    // Create a new Asset instance
+                    Asset newAsset = new Asset(newAssetId, newAssetStock, newAssetLocation, "Available");
+
+                    // Add the new asset to the list of available assets
+                    availableAssets.Add(newAsset);
+
+                    // Display a message confirming the addition of the new asset
+                    Console.WriteLine($"Asset '{newAssetLocation}' added successfully.");
+                    break;
+
+                default:
+                    Console.WriteLine("Invalid option. Please choose a valid option.");
+                    break;
+            }
+        }
+
+        static void DisplayRegularEmployeeOptions()
+        {
+            Console.WriteLine("Regular Employee Options:");
+            Console.WriteLine("1. Check Out Asset");
+            Console.WriteLine("2. Check In Asset");
+        }
+
+        static void PerformRegularEmployeeAction(int selectedOption, Employee selectedEmployee, List<Asset> availableAssets)
+        {
+            switch (selectedOption)
+            {
+                case 1:
+                    // Check Out Asset
+                    Console.WriteLine("Checking Out Asset...");
+
+                    // Display available assets
+                    Console.WriteLine("Available Assets:");
+                    foreach (var asset in availableAssets)
+                    {
+                        Console.WriteLine($"Asset ID: {asset.AssetId}, Name: {asset.AssetLocation}, Assignment: {asset.Assignment}");
+                    }
+
+                    // User input for CheckOut
+                    Console.Write("Enter CheckOut ID: ");
+                    int checkOutId = int.Parse(Console.ReadLine());
+
+                    Console.Write("Choose Asset ID from the list: ");
+                    int chosenAssetId = int.Parse(Console.ReadLine());
+
+                    // Find the selected asset
+                    Asset selectedAsset = availableAssets.Find(asset => asset.AssetId == chosenAssetId);
+
+                    if (selectedAsset != null && selectedAsset.Assignment != "In Use")
+                    {
+                        // Update asset status
+                        selectedAsset.SetAssignment("In Use");
+
+                        // Create CheckOut instance with user input
+                        CheckOut checkOut = new CheckOut(checkOutId, selectedAsset.AssetLocation);
+
+                        // Record the check-out transaction (you might want to store this information somewhere)
+                        Console.WriteLine($"Asset '{selectedAsset.AssetLocation}' checked out by employee '{selectedEmployee.Name}'.");
+
+                        // Simulate borrowing asset and display the result
+                        string borrowedAssetList = checkOut.BorrowAsset();
+                        Console.WriteLine($"Borrowed Asset List: {borrowedAssetList}");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Invalid Asset ID or the selected asset is currently in use. Please choose a valid asset.");
+                    }
+                    break;
+
+                case 2:
+                    // Check In Asset
+                    Console.WriteLine("Checking In Asset...");
+
+                    // Display assets
+                    Console.WriteLine($"Assets currently checked out by {selectedEmployee.Name}:");
+                    foreach (var asset in availableAssets)
+                    {
+                        if (asset.Assignment == selectedEmployee.Name)
+                        {
+                            Console.WriteLine($"Asset ID: {asset.AssetId}, Name: {asset.AssetLocation}");
+                        }
+                    }
+
+                    // User input for CheckIn
+                    Console.Write("Enter CheckIn ID: ");
+                    int checkInId = int.Parse(Console.ReadLine());
+
+                    Console.Write("Choose Asset ID from the list to check in: ");
+                    chosenAssetId = int.Parse(Console.ReadLine());
+
+                    // Find the selected asset
+                    selectedAsset = availableAssets.Find(asset => asset.AssetId == chosenAssetId);
+
+                    if (selectedAsset != null && selectedAsset.Assignment == selectedEmployee.Name)
+                    {
+                        // Update asset status
+                        selectedAsset.SetAssignment("Available");
+
+                        // Create CheckIn instance with user input
+                        CheckIn checkIn = new CheckIn(checkInId, selectedAsset.AssetLocation);
+
+                        // Record the check-in transaction (you might want to store this information somewhere)
+                        Console.WriteLine($"Asset '{selectedAsset.AssetLocation}' checked in by employee '{selectedEmployee.Name}'.");
+
+                        // Simulate returning the asset and display the result
+                        string returnedAssetList = checkIn.ReturnAsset();
+                        Console.WriteLine($"Returned Asset List: {returnedAssetList}");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Invalid Asset ID or the selected asset is not currently checked out by the employee. Please choose a valid asset.");
+                    }
+                    break;
+
+                default:
+                    Console.WriteLine("Invalid option. Please choose a valid option.");
+                    break;
+            }
+        }
+
+    static Employee GetSelectedEmployee(List<Employee> employees)
+    {
+        Console.Write("Choose Employee ID from the list: ");
+        int chosenEmployeeId = int.Parse(Console.ReadLine());
+
+        // Find the selected employee
+        return employees.Find(employee => employee.EmployeeId == chosenEmployeeId);
     }
-}
+
+    static int GetSelectedOption()
+        {
+            int selectedOption;
+
+            while (true)
+            {
+                Console.Write("Choose an option: ");
+                if (int.TryParse(Console.ReadLine(), out selectedOption))
+                {
+                    return selectedOption;
+                }
+                else
+                {
+                    Console.WriteLine("Invalid input. Please enter a numeric option.");
+                }
+            }
+        }
+    }
+
