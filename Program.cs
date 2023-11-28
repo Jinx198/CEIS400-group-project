@@ -202,11 +202,7 @@ public class Management
     }
 }
 
-
-
-
 // Program class
-
 class Program
 {
     static void Main()
@@ -222,7 +218,7 @@ class Program
                 new Employee(1, "John Doe"),
                 new Employee(2, "Jane Smith"),
                 new Employee(3, "Bob Johnson"),
-                new Employee(4, "Jane Manager")
+                new Employee(4, "John Manager")
                 // Add more employees as needed
             };
 
@@ -242,9 +238,6 @@ class Program
                 Console.WriteLine($"Employee ID: {employee.EmployeeId}, Name: {employee.Name}");
             }
 
-            // User input for employee selection
-            Console.Write("Choose Employee ID from the list: ");
-            int chosenEmployeeId = int.Parse(Console.ReadLine());
 
             // Find the selected employee
             Employee selectedEmployee = GetSelectedEmployee(employees);
