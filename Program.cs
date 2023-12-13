@@ -208,12 +208,10 @@ class Program
     static void Main()
     {
 
-        do
-        {
-            // Create new manager
-            Management manager = new Management(1, "John Manager");
+        // Create new manager
+        Management manager = new Management(1, "John Manager");
 
-            List<Employee> employees = new List<Employee>
+        List<Employee> employees = new List<Employee>
             {
                 new Employee(1, "John Doe"),
                 new Employee(2, "Jane Smith"),
@@ -222,14 +220,18 @@ class Program
                 // Add more employees as needed
             };
 
-            // List of available assets
-            List<Asset> availableAssets = new List<Asset>
+        // List of available assets
+        List<Asset> availableAssets = new List<Asset>
             {
                 new Asset(1, 10, "Laptop", "In Use"),
                 new Asset(2, 5, "Keyboard", "Available"),
                 new Asset(3, 3, "Mouse", "In Use")
                 // Add more assets as needed
             };
+
+        do
+        {
+            
 
             // Display Employees
             Console.WriteLine("Available Employees:");
@@ -252,6 +254,9 @@ class Program
                     DisplayManagerOptions();
                     int selectedOption = GetSelectedOption();
                     PerformManagerAction(selectedOption, manager, availableAssets);
+                    // Display all assets and their assignments after manager action
+                    Console.WriteLine("All Assets and Assignments:");
+                    
                 }
                 else
                 {
@@ -357,9 +362,16 @@ class Program
 
                     // Display a message confirming the addition of the new asset
                     Console.WriteLine($"Asset '{newAssetLocation}' added successfully.");
-                    break;
 
-                default:
+                Console.WriteLine("All Assets and Assignments:");
+                foreach (var asset in availableAssets)
+                {
+                    Console.WriteLine($"Asset ID: {asset.AssetId}, Name: {asset.AssetLocation}, Assignment: {asset.Assignment}");
+                }
+                break;
+
+
+            default:
                     Console.WriteLine("Invalid option. Please choose a valid option.");
                     break;
             }
